@@ -41,44 +41,73 @@
   --radius-sm: calc(var(--radius) - 4px);
 }
 
-:root {
-  /* --- TUS COLORES DE BRANDING --- */
-  --color-main: #00c2a8;
-  --color-text: #2d4a44;
-  --color-danger: #e1665d;
+@layer base {
+  :root {
+    /* --- FONDO Y TEXTO --- */
+    --background: #f8faf9;    /* Un blanco con un toque de menta muy sutil */
+    --foreground: #2d4a44;    /* Tu color-text */
 
-  /* --- VARIABLES OKLCH PARA SHADCN --- */
-  --background: oklch(0.98 0.01 220); 
-  --foreground: oklch(0.25 0.04 180);
+    /* --- TARJETAS Y POPOVERS --- */
+    --card: #ffffff;
+    --card-foreground: #2d4a44;
+    --popover: #ffffff;
+    --popover-foreground: #2d4a44;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.25 0.04 180);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.25 0.04 180);
+    /* --- COLORES DE MARCA (PRIMARY) --- */
+    --color-main: #00c2a8;       /* Tu color-main */
+    --primary-foreground: #ffffff;
 
-  /* El Turquesa de tu logo */
-  --primary: oklch(0.72 0.16 178);
-  --primary-foreground: oklch(0.98 0 0);
+    /* --- COLORES SECUNDARIOS Y MUTED --- */
+    --secondary: #e6f7f5;     /* Un turquesa muy clarito para fondos de botones */
+    --secondary-foreground: #008a78;
 
-  --secondary: oklch(0.94 0.02 180);
-  --secondary-foreground: oklch(0.25 0.04 180);
+    --muted: #f1f5f4;
+    --muted-foreground: #6b8a84;
 
-  --muted: oklch(0.94 0.02 180);
-  --muted-foreground: oklch(0.5 0.05 180);
+    /* --- ACENTOS Y ESTADOS --- */
+    --accent: #e6f7f5;
+    --accent-foreground: #00c2a8;
 
-  --accent: oklch(0.94 0.1 178 / 0.1);
-  --accent-foreground: oklch(0.72 0.16 178);
+    --destructive: #e1665d;   /* Tu color-danger */
+    --destructive-foreground: #ffffff;
 
-  --destructive: oklch(0.65 0.18 25);
-  --destructive-foreground: oklch(1 0 0);
+    /* --- BORDES E INPUTS --- */
+    --border: #e2e8e7;
+    --input: #e2e8e7;
+    --ring: #00c2a8;          /* El anillo de enfoque será tu turquesa */
 
-  --border: oklch(0.9 0.02 180);
-  --input: oklch(0.9 0.02 180);
-  --ring: oklch(0.72 0.16 178);
+    /* --- OTROS ESTADOS --- */
+    --success: #22c55e;
+    --warning: #f59e0b;
 
-  --radius: 0.625rem;
+    /* --- GRÁFICOS (CHARTS) --- */
+    --chart-1: #00c2a8;
+    --chart-2: #2d4a44;
+    --chart-3: #4fd1c5;
+    --chart-4: #81e6d9;
+    --chart-5: #2c7a7b;
+
+    --radius: 0.625rem;
+  }
+
+  .dark {
+    --background: #0f1a18;
+    --foreground: #f8faf9;
+
+    --card: #162422;
+    --card-foreground: #f8faf9;
+
+    --primary: #00c2a8;
+    --primary-foreground: #0f1a18;
+
+    --muted: #1e2e2b;
+    --muted-foreground: #94a3a1;
+
+    --border: #2d4a44;
+    --input: #2d4a44;
+    /* ... el resto se ajusta proporcionalmente */
+  }
 }
-
 @layer base {
   * {
     border-color: var(--border);
