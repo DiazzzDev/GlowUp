@@ -3,7 +3,6 @@ import { NavLink } from "react-router";
 export const Navbar = () => {
 	// Estilos base para evitar repetición
 	const tabBase = "px-6 py-3 flex items-center gap-2 font-medium transition-all duration-200";
-
 	return (
 		<nav className="bg-[var(--color-main)] flex items-end justify-between px-6 h-16 shadow-md">
 			<div className="flex items-end h-full space-x-4">
