@@ -1,7 +1,62 @@
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 
+// 1. Componentes Globales
+// Traigo el Header que reutilizo en todas las pantallas para que el diseño sea consistente
+import Header from './components/Header'; 
 
-const App = () => {
+// 2. Importación de Pantallas Informativas
+// Aquí importo todas las pantallas que ya terminé de maquetar
+import Login from './screens/Login';           // Pantalla de inicio de sesión
+import Index from './screens/Index';           // Página principal de bienvenida
+import AboutUs from './screens/AboutUs';       // Quiénes somos
+import Product from './screens/Product';       // Catálogo de productos
+import ContactUs from './screens/ContactUs';   // Formulario de contacto
+import Survey from './screens/Survey';         // Encuesta para rutina ideal
+import SkinTips from './screens/SkinTips';     // Consejos de cuidado de la piel
 
+// 3. Importación de las Pantallas de Venta
+// Estas son las del flujo de compra (carrito y pago)
+import Cart from './screens/Cart';             // Mi carrito de compras
+import Checkout from './screens/Checkout';     // Proceso de pago
+
+function App() {
+  return (
+    <>
+      {/* El Header se mantiene fijo arriba en todas las rutas */}
+      {/* Así no tengo que estar importándolo manualmente en cada pantalla */}
+      <Header /> 
+
+      <Routes>
+        {/* Acceso y Landing */}
+        {/* La primera pantalla que ve el usuario es el Login */}
+        <Route path="/" element={<Login />} />
+        {/* Después de iniciar sesión, lo mando al inicio */}
+        <Route path="/inicio" element={<Index />} />
+
+        {/* Secciones de Marca */}
+        {/* Páginas informativas de la empresa */}
+        <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/contact-us" element={<ContactUs />} />
+        
+        {/* Catálogo y Recomendaciones */}
+        {/* Donde el usuario puede ver productos y recibir sugerencias */}
+        <Route path="/product" element={<Product />} />
+        <Route path="/survey" element={<Survey />} /> 
+        <Route path="/skin-tips" element={<SkinTips />} /> 
+
+        {/* Flujo de Compra */}
+        {/* El carrito muestra lo que el usuario va a comprar */}
+        <Route path="/cart" element={<Cart />} /> 
+        {/* El checkout es el formulario de pago */}
+        <Route path="/checkout" element={<Checkout />} /> 
+
+        {/* Manejo de rutas inexistentes */}
+        {/* Si el usuario escribe cualquier cosa que no existe, lo mando al inicio */}
+        <Route path="*" element={<Index />} />
+      </Routes>
+    </>
+  );
 }
 
-export default App
+export default App;
