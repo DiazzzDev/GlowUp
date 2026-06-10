@@ -1,15 +1,9 @@
 import { Schema, model } from "mongoose";
 
 const productSchema = new Schema({
-    image: {
-        type: String,
-        default: null
-    },
+    image: { type: String, },
 
-    publicId: {
-        type: String,
-        default: null
-    },
+    public_id: { type: String, },
 
     productName: {
         type: String,
