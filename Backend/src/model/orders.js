@@ -1,16 +1,6 @@
 import { Schema, model } from "mongoose";
 
 const orderSchema = new Schema({
-    image: {
-        type: String,
-        default: null
-    },
-
-    publicId: {
-        type: String,
-        default: null
-    },
-
     customer: {
         type: Schema.Types.ObjectId,
         ref: "Customer",
