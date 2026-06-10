@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const orderSchema = new Schema({
-    customer: {
+    customerId: {
         type: Schema.Types.ObjectId,
         ref: "Customer",
         required: true
@@ -16,7 +16,7 @@ const orderSchema = new Schema({
 
     products: [
         {
-            product: {
+            productId: {
                 type: Schema.Types.ObjectId,
                 ref: "Product",
                 required: true
