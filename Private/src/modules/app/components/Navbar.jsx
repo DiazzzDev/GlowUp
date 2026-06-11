@@ -4,7 +4,7 @@ export const Navbar = () => {
 	// Estilos base para evitar repetición
 	const tabBase = "px-6 py-3 flex items-center gap-2 font-medium transition-all duration-200";
 	return (
-		<nav className="bg-[var(--color-main)] flex items-end justify-between px-6 h-16 shadow-md">
+		<nav className="bg-primary flex items-end justify-between px-6 h-16 shadow-md">
 			<div className="flex items-end h-full space-x-4">
 
 				{/* Administradores */}
@@ -12,7 +12,7 @@ export const Navbar = () => {
 					to="/admin/employee"
 					className={({ isActive }) =>
 						`${tabBase} rounded-t-xl self-end ${isActive
-							? "bg-[var(--color-white)] text-[var(--color-main)]"
+							? "bg-[var(--color-white)] text-primary"
 							: "text-white hover:bg-white/10 mb-1 rounded-lg"
 						}`
 					}
@@ -25,7 +25,7 @@ export const Navbar = () => {
 					to="/admin/product"
 					className={({ isActive }) =>
 						`${tabBase} rounded-t-xl self-end ${isActive
-							? "bg-[var(--color-white)] text-[var(--color-main)]"
+							? "bg-[var(--color-white)] text-primary"
 							: "text-white hover:bg-white/10 mb-1 rounded-lg"
 						}`
 					}
@@ -38,7 +38,7 @@ export const Navbar = () => {
 					to="/admin/order"
 					className={({ isActive }) =>
 						`${tabBase} rounded-t-xl self-end ${isActive
-							? "bg-[var(--color-white)] text-[var(--color-main)]"
+							? "bg-[var(--color-white)] text-primary"
 							: "text-white hover:bg-white/10 mb-1 rounded-lg"
 						}`
 					}
@@ -50,7 +50,7 @@ export const Navbar = () => {
 					to="/admin/customer"
 					className={({ isActive }) =>
 						`${tabBase} rounded-t-xl self-end ${isActive
-							? "bg-[var(--color-white)] text-[var(--color-main)]"
+							? "bg-[var(--color-white)] text-primary"
 							: "text-white hover:bg-white/10 mb-1 rounded-lg"
 						}`
 					}

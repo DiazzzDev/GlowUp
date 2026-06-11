@@ -11,7 +11,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   
-  --color-primary: var(--primary);
+  --color-primary: var(--color-primary);
   --color-primary-foreground: var(--primary-foreground);
   
   --color-card: var(--card);
@@ -54,7 +54,7 @@
     --popover-foreground: #2d4a44;
 
     /* --- COLORES DE MARCA (PRIMARY) --- */
-    --color-main: #00c2a8;       /* Tu color-main */
+    --color-primary: #00c2a8;       /* Tu color-main */
     --primary-foreground: #ffffff;
 
     /* --- COLORES SECUNDARIOS Y MUTED --- */

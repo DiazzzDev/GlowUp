@@ -25,7 +25,8 @@ export const CustomerPage = () => {
     return (
         <>
             <div className="flex flex-col gap-6">
-                <div className="flex justify-between items-end gap-4">
+                <div className="flex justify-end items-end gap-4">
+                    {/* 
                     <div className="flex flex-1 items-end gap-4">
                         <div className="flex flex-col flex-1 max-w-xl">
                             <Input placeholder="Buscar cliente..." className="w-full" />
@@ -46,6 +47,7 @@ export const CustomerPage = () => {
                             </Select>
                         </div>
                     </div>
+                    */}
                     <Button className="rounded-sm text-base px-4 py-4">
                         <Plus className="mr-2" strokeWidth={4} />
                         Agregar Cliente
