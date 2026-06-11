@@ -1,31 +1,37 @@
 import { httpRequest } from "@/utils/httpRequest";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export const useGetCustomers = () => {
-    const [employees, setEmployees] = useState([]);
+    const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Encapsulamos la petición asíncrona dentro de una función interna
+    const fetchCustomers = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await httpRequest.get("/customer");
+            // Ajusta esto según si tu API devuelve los datos directos o envueltos
+            setCustomers(response.data || []);
+        } catch (err) {
+            console.error("Error fetching customers:", err);
+            setError(err.message || "Error al obtener clientes");
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    // Se ejecuta automáticamente al montar el componente
     useEffect(() => {
-        // 1. Creamos una función asíncrona INTERNA
-        const fetchEmployees = async () => {
-            try {
-                setLoading(true);
-                const response = await httpRequest.get('/customers');
-                setEmployees(response.data);
-                setError(null); // Limpiamos errores previos si los hubiera
-            } catch (err) {
-                console.error(err);
-                setError(err);
-            } finally {
-                setLoading(false); // Se ejecuta tanto si va bien como si va mal
-            }
-        };
+        fetchCustomers();
+    }, [fetchCustomers]);
 
-        // 2. La ejecutamos inmediatamente
-        fetchEmployees();
-    }, []); // Array vacío para que solo se ejecute al montar el componente
-
-    // 3. El return SIEMPRE va al final del hook, fuera de cualquier bloque
-    return { error, loading, employees };
-}
+    // Retornamos los estados y la función para volver a cargar
+    return {
+        customers,
+        loading,
+        error,
+        refetch: fetchCustomers
+    };
+};

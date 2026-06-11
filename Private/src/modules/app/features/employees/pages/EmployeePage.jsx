@@ -137,7 +137,7 @@ export const EmployeePage = () => {
             {/* Oculta la paginación si está cargando, si hay error o si la lista está vacía */}
             {!loading && !error && employees && employees.length > 0 && (
                 <div className="flex justify-end w-full">
-                    <Pagination>
+                    {/* <Pagination>
                         <PaginationContent>
                             <PaginationItem>
                                 <PaginationPrevious href="#" />
@@ -160,7 +160,7 @@ export const EmployeePage = () => {
                                 <PaginationNext href="#" />
                             </PaginationItem>
                         </PaginationContent>
-                    </Pagination>
+                    </Pagination>*/}
                 </div>
             )}
         </div>

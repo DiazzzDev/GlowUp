@@ -239,7 +239,7 @@ export const ProductPage = () => {
             {/* Paginación */}
             {!loading && !error && products && products.length > 0 && (
                 <div className="flex justify-end w-full">
-                    <Pagination>
+                    {/*<Pagination>
                         <PaginationContent>
                             <PaginationItem>
                                 <PaginationPrevious href="#" />
@@ -262,7 +262,7 @@ export const ProductPage = () => {
                                 <PaginationNext href="#" />
                             </PaginationItem>
                         </PaginationContent>
-                    </Pagination>
+                    </Pagination>*/}
                 </div>
             )}
         </div>

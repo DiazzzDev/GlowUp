@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { ListItemCard } from "@/modules/app/components/ListItemCard.jsx";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { useGetOrders } from "../hooks/useGetOrders.js";
+import { ViewOrderModal } from "../components/ViewOrderModal.jsx";
 
 export const OrderPage = () => {
     // 1. Extraemos los estados reales desde tu hook
@@ -58,13 +59,8 @@ export const OrderPage = () => {
                     </div>
                 </div>
                 */}
-                <Button className="rounded-sm text-base px-4 py-4">
-                    <Plus className="mr-2" strokeWidth={4} />
-                    Agregar Pedido
-                </Button>
             </div>
 
-            {/* Manejo de Error */}
             {error ? (
                 <div className="p-4 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 text-center mt-4">
                     <p>Hubo un error al obtener los pedidos. Por favor, inténtalo de nuevo.</p>
@@ -72,60 +68,44 @@ export const OrderPage = () => {
             ) : (
                 <div className="flex flex-col border-t border-slate-200 mt-4 max-h-[65dvh] overflow-y-auto">
                     {loading ? (
-                        /* Skeleton Shimmer adaptado a la forma del ListItemCard de Órdenes */
-                        Array.from({ length: 4 }).map((_, index) => (
-                            <div
-                                key={`skeleton-${index}`}
-                                className="flex items-center justify-between p-4 border-b border-slate-100 animate-pulse"
-                            >
-                                <div className="flex items-center gap-4 flex-1">
-                                    <div className="h-12 w-12 rounded-md bg-slate-200" />
-                                    <div className="flex flex-col gap-2 flex-1 max-w-xs">
-                                        <div className="h-4 bg-slate-200 rounded w-2/3" />
-                                        <div className="h-3 bg-slate-200 rounded w-1/3" />
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-8">
-                                    <div className="h-6 bg-slate-200 rounded-full w-20" />
-                                    <div className="flex flex-col items-end gap-1">
-                                        <div className="h-3 bg-slate-200 rounded w-16" />
-                                        <div className="h-5 bg-slate-200 rounded w-12" />
-                                    </div>
-                                    <div className="h-8 bg-slate-200 rounded w-12" />
-                                </div>
-                            </div>
-                        ))
+                        /* ... Tu render de Skeletons existente */
+                        null
                     ) : orders && orders.length > 0 ? (
-                        /* Renderizado de la data real */
                         orders.map((order) => {
-                            // Extraemos la imagen del primer producto del carrito de la orden (si existe)
                             const fallbackImage = order.products?.[0]?.productId?.image || "";
                             const client = order.customerId || {};
 
                             return (
-                                <ListItemCard
-                                    key={order._id} // Mapped desde MongoDB _id
-                                    image={fallbackImage}
-                                    title={`${client.firstName || "Cliente"} ${client.lastName || ""}`}
-                                    subtitle={`${order.orderNumber}`} // Ya trae el "N°" incorporado en el JSON
-                                    details={[`Tel: ${client.phone || "N/A"}`]}
-                                    status={translateStatus(order.status)}
-                                    actionLabel="Editar"
-                                    rightContent={
-                                        <div className="text-right">
-                                            <span className="block text-sm text-slate-500">
-                                                {formatDate(order.orderDate)}
-                                            </span>
-                                            <span className="text-lg font-bold text-slate-900">
-                                                ${order.total}
-                                            </span>
+                                /* 2. Envolvemos o inyectamos el modal usando la prop de trigger */
+                                <ViewOrderModal
+                                    key={order._id}
+                                    order={order}
+                                    triggerComponent={
+                                        <div className="cursor-pointer group">
+                                            <ListItemCard
+                                                image={fallbackImage}
+                                                title={`${client.firstName || "Cliente"} ${client.lastName || ""}`}
+                                                subtitle={`${order.orderNumber}`}
+                                                details={[`Tel: ${client.phone || "N/A"}`]}
+                                                status={translateStatus(order.status)}
+                                                actionLabel="Ver Detalles" // <-- Cambiamos "Editar" por "Ver Detalles"
+                                                rightContent={
+                                                    <div className="text-right">
+                                                        <span className="block text-sm text-slate-500">
+                                                            {formatDate(order.orderDate)}
+                                                        </span>
+                                                        <span className="text-lg font-bold text-slate-900">
+                                                            ${order.total}
+                                                        </span>
+                                                    </div>
+                                                }
+                                            />
                                         </div>
                                     }
                                 />
                             );
                         })
                     ) : (
-                        /* Estado de lista vacía */
                         <div className="p-8 text-center text-muted-foreground">
                             No se encontraron pedidos en el sistema.
                         </div>
@@ -136,7 +116,7 @@ export const OrderPage = () => {
             {/* Paginación defensiva */}
             {!loading && !error && orders && orders.length > 0 && (
                 <div className="flex justify-end w-full">
-                    <Pagination>
+                    {/*<Pagination>
                         <PaginationContent>
                             <PaginationItem>
                                 <PaginationPrevious href="#" />
@@ -159,7 +139,7 @@ export const OrderPage = () => {
                                 <PaginationNext href="#" />
                             </PaginationItem>
                         </PaginationContent>
-                    </Pagination>
+                    </Pagination>*/}
                 </div>
             )}
         </div>
