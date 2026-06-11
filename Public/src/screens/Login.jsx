@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-// Importo el hook para poderme mover entre páginas
+// Importo los hooks para moverme entre páginas
 import { useNavigate } from 'react-router-dom'; 
 // Mi imagen de fondo que está en assets
 import imagenFondo from '../assets/login/fondo.png';
@@ -8,15 +8,55 @@ const Login = () => {
   // Los estados para guardar lo que escribo
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   
   // Activo la función de navegación
   const navigate = useNavigate(); 
 
-  // Esta función se encarga de mandarme al Index cuando doy clic
-  const manejarInicioSesion = (e) => {
+  // Esta función se encarga de conectar con mi backend e iniciar sesión de verdad
+  const manejarInicioSesion = async (e) => {
     e.preventDefault();
-    // Simulo que entro y me manda a la ruta /inicio que pusimos en el App.jsx
-    navigate('/inicio'); 
+    setError('');
+
+    try {
+      // Hago la petición POST a mi ruta de autenticación de clientes
+      const response = await fetch('http://localhost:4000/api/client-auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: correo,
+          password: password
+        })
+      });
+
+      // Leo la respuesta como texto primero para ver si el servidor me está enviando un error HTML
+      const textoRespuesta = await response.text();
+      console.log("Respuesta cruda del servidor:", textoRespuesta); // Aquí veo qué llega realmente
+      
+      const data = JSON.parse(textoRespuesta);
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Correo o contraseña incorrectos');
+      }
+
+      // Si todo sale bien, guardo los datos del usuario en el localStorage de mi navegador
+      localStorage.setItem('user', JSON.stringify({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        image: data.image
+      }));
+
+      // Me manda a la ruta /inicio que pusimos en el App.jsx
+      navigate('/inicio'); 
+
+    } catch (err) {
+      console.error("Error capturado:", err);
+      setError(err.message || 'Error al conectar con el servidor');
+    }
   };
 
   return (
@@ -26,6 +66,9 @@ const Login = () => {
       <div style={styles.tarjeta}>
         
         <h2 style={styles.titulo}>Bienvenido</h2>
+
+        {/* Alerta por si pongo datos malos */}
+        {error && <p style={{ color: 'red', fontSize: '14px', marginBottom: '15px' }}>{error}</p>}
         
         <form onSubmit={manejarInicioSesion} style={styles.formulario}>
           
@@ -61,6 +104,12 @@ const Login = () => {
           </button>
           
         </form>
+
+        {/* Texto de enlace por si no tengo cuenta mandar a registrarme */}
+        <p style={{ marginTop: '20px', fontSize: '14px', color: '#2A4D46' }}>
+          ¿No tienes cuenta? <span onClick={() => navigate('/register')} style={{ color: '#17C3B2', fontWeight: 'bold', cursor: 'pointer' }}>Regístrate aquí</span>
+        </p>
+
       </div>
     </div>
   );
@@ -74,8 +123,8 @@ const styles = {
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
-    width: '100vw',      // Ancho total de la pantalla
-    minHeight: '100vh',  // Alto total de la pantalla
+    width: '100vw',
+    minHeight: '100vh',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
