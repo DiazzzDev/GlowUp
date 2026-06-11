@@ -1,16 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const employeeSchema = new Schema({
-    image: {
-        type: String,
-        default: null
-    },
-
-    publicId: {
-        type: String,
-        default: null
-    },
-
+    
     firstName: {
         type: String,
         required: true,
