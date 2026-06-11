@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 // Importo los hooks para moverme entre páginas
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 // Mi imagen de fondo que está en assets
 import imagenFondo from '../assets/login/fondo.png';
 
@@ -9,9 +9,9 @@ const Login = () => {
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  
+
   // Activo la función de navegación
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   // Esta función se encarga de conectar con mi backend e iniciar sesión de verdad
   const manejarInicioSesion = async (e) => {
@@ -19,39 +19,27 @@ const Login = () => {
     setError('');
 
     try {
-      // Hago la petición POST a mi ruta de autenticación de clientes
-      const response = await fetch('http://localhost:4000/api/client-auth/login', {
+      const response = await fetch('http://localhost:4000/api/auth/customer/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
           email: correo,
           password: password
         })
       });
 
-      // Leo la respuesta como texto primero para ver si el servidor me está enviando un error HTML
-      const textoRespuesta = await response.text();
-      console.log("Respuesta cruda del servidor:", textoRespuesta); // Aquí veo qué llega realmente
-      
-      const data = JSON.parse(textoRespuesta);
+      const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.message || 'Correo o contraseña incorrectos');
       }
 
-      // Si todo sale bien, guardo los datos del usuario en el localStorage de mi navegador
-      localStorage.setItem('user', JSON.stringify({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phone: data.phone,
-        image: data.image
-      }));
+      localStorage.setItem('user', JSON.stringify(data.customer));
 
-      // Me manda a la ruta /inicio que pusimos en el App.jsx
-      navigate('/inicio'); 
+      navigate('/inicio');
 
     } catch (err) {
       console.error("Error capturado:", err);
@@ -64,14 +52,14 @@ const Login = () => {
     <div style={styles.loginContainer}>
       {/* Mi tarjeta blanca de login */}
       <div style={styles.tarjeta}>
-        
+
         <h2 style={styles.titulo}>Bienvenido</h2>
 
         {/* Alerta por si pongo datos malos */}
         {error && <p style={{ color: 'red', fontSize: '14px', marginBottom: '15px' }}>{error}</p>}
-        
+
         <form onSubmit={manejarInicioSesion} style={styles.formulario}>
-          
+
           {/* El campo del correo */}
           <div style={styles.grupoInput}>
             <label style={styles.label}>Correo electrónico</label>
@@ -102,7 +90,7 @@ const Login = () => {
           <button type="submit" style={styles.boton}>
             Iniciar sesión
           </button>
-          
+
         </form>
 
         {/* Texto de enlace por si no tengo cuenta mandar a registrarme */}

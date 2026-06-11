@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import imagenFondo from '../assets/login/fondo.png'; 
+import imagenFondo from '../assets/login/fondo.png';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -19,20 +19,36 @@ const Register = () => {
 
     try {
       const dataToSend = new FormData();
-      const clientData = { firstName: formData.firstName, lastName: formData.lastName, email: formData.email, phone: formData.phone, password: formData.password };
-      dataToSend.append('client', JSON.stringify(clientData));
-      if (imageFile) dataToSend.append('image', imageFile);
 
-      const response = await fetch('http://localhost:4000/api/client-auth/register', {
+      const customerData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password
+      };
+
+      dataToSend.append('customer', JSON.stringify(customerData));
+
+      if (imageFile) {
+        dataToSend.append('image', imageFile);
+      }
+
+      const response = await fetch('http://localhost:4000/api/auth/customer/register', {
         method: 'POST',
-        body: dataToSend
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify()
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Error al registrar el cliente');
 
-      // Guardo el token en el localstorage
-      localStorage.setItem('registerToken', data.token);
+      if (!response.ok) {
+        throw new Error(data.message || 'Error al registrar el cliente');
+      }
+
       navigate('/verify-code', { state: { email: formData.email } });
 
     } catch (err) {
