@@ -15,7 +15,7 @@ export const ListItemCard = ({
     subtitle,
     details = [],
     status,
-    actionLabel = "Editar",
+    actionLabel,
     onAction,
     rightContent,
 }) => {
@@ -24,11 +24,11 @@ export const ListItemCard = ({
     return (
         <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-transparent hover:bg-slate-50/50 transition-colors">
             <div className="flex items-center gap-6">
-                <div className="h-20 w-20 bg-[#e0e0e0] border border-slate-300 rounded-sm overflow-hidden">
-                    {image && (
+                {image && (
+                    <div className="h-20 w-20 bg-[#e0e0e0] border border-slate-300 rounded-sm overflow-hidden">
                         <img src={image} className="object-cover w-full h-full" alt={title} />
-                    )}
-                </div>
+                    </div>
+                )}
 
                 <div className="flex flex-col">
                     <h3 className="text-lg font-bold text-slate-800">{title}</h3>
@@ -56,10 +56,12 @@ export const ListItemCard = ({
 
                 {rightContent && <div className="flex items-center">{rightContent}</div>}
 
-                <Button className="rounded-sm" onClick={onAction}>
-                    {actionLabel}
-                </Button>
+                {actionLabel &&
+                    < Button className="rounded-sm" onClick={onAction}>
+                        {actionLabel}
+                    </Button>
+                }
             </div>
-        </div>
+        </div >
     );
 };
