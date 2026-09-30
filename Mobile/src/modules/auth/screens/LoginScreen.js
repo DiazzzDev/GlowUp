@@ -5,8 +5,8 @@ import AuthButton from '../components/AuthButton';
 import useAuth from '../hooks/useAuth';
 
 export const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('example@email.com');
-  const [password, setPassword] = useState('12345678');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const { loading, error, handleLogin } = useAuth(navigation);
 
   const onSubmit = () => {
@@ -64,7 +64,7 @@ export const LoginScreen = ({ navigation }) => {
             secureTextEntry
           />
 
-          <TouchableOpacity className="items-end mb-5">
+          <TouchableOpacity className="items-end mb-5" onPress={() => navigation.navigate('ForgotPassword')}>
             <Text className="text-[#17C3B2] text-xs font-semibold">
               ¿Olvidaste tu contraseña?
             </Text>

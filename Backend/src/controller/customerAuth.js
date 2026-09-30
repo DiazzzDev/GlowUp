@@ -4,12 +4,13 @@ import jsonwebtoken from "jsonwebtoken";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 import { config } from "../../config.js";
+import { EMAIL_PATTERN, validateCustomer } from "../utils/validation.js";
 
 const customerAuth = {};
 
 customerAuth.register = async (req, res) => {
     try {
-        const registerData = JSON.parse(req.body.customer);
+        const registerData = req.body.customer ? JSON.parse(req.body.customer) : req.body;
 
         const {
             firstName,
@@ -18,6 +19,9 @@ customerAuth.register = async (req, res) => {
             email,
             password
         } = registerData;
+
+        const validationError = validateCustomer({ firstName, lastName, phone, email, password });
+        if (validationError) return res.status(400).json({ message: validationError });
 
         const image = req.file?.path || null;
         const publicId = req.file?.filename || null;
@@ -158,7 +162,8 @@ customerAuth.verifyCode = async (req, res) => {
 customerAuth.login = async (req, res) => {
     try {
         const { password } = req.body;
-        const email = req.body.email.toLowerCase().trim();
+        const email = String(req.body.email || "").toLowerCase().trim();
+        if (!EMAIL_PATTERN.test(email) || !password) return res.status(400).json({ message: "Correo y contraseña son obligatorios" });
 
         const customerFound = await customerModel.findOne({ email });
 
@@ -235,6 +240,46 @@ customerAuth.login = async (req, res) => {
         return res.status(500).json({
             message: "Error del servidor"
         });
+    }
+};
+
+customerAuth.requestPasswordReset = async (req, res) => {
+    try {
+        const email = String(req.body.email || "").toLowerCase().trim();
+        if (!EMAIL_PATTERN.test(email)) return res.status(400).json({ message: "El correo electrónico no es válido" });
+        const customer = await customerModel.findOne({ email });
+        // Avoid account enumeration while still issuing a secure, short-lived token for real accounts.
+        if (!customer) return res.status(200).json({ message: "Si el correo existe, se enviará un código" });
+        const code = crypto.randomBytes(3).toString("hex");
+        const token = jsonwebtoken.sign({ customerId: customer._id, code, purpose: "password-reset" }, config.jwt.SECRET_KEY, { expiresIn: "15m" });
+        res.cookie("passwordResetCookie", token, { maxAge: 15 * 60 * 1000, httpOnly: true });
+        const transporter = nodemailer.createTransport({ service: "gmail", auth: { user: config.mail.MAIL_USER, pass: config.mail.MAIL_PASS } });
+        await transporter.sendMail({ from: config.mail.MAIL_USER, to: email, subject: "Recuperación de contraseña", text: `Tu código de recuperación es: ${code}` });
+        return res.status(200).json({ message: "Si el correo existe, se enviará un código" });
+    } catch (error) {
+        console.error("Error en recuperación: " + error);
+        return res.status(500).json({ message: "No se pudo iniciar la recuperación" });
+    }
+};
+
+customerAuth.resetPassword = async (req, res) => {
+    try {
+        const { code, password } = req.body;
+        if (!code || String(password || "").length < 8) return res.status(400).json({ message: "Código y una contraseña de al menos 8 caracteres son obligatorios" });
+        const token = req.cookies.passwordResetCookie;
+        if (!token) return res.status(400).json({ message: "La sesión de recuperación expiró" });
+        const decoded = jsonwebtoken.verify(token, config.jwt.SECRET_KEY);
+        if (decoded.purpose !== "password-reset" || decoded.code !== code) return res.status(400).json({ message: "Código de recuperación inválido" });
+        const customer = await customerModel.findById(decoded.customerId);
+        if (!customer) return res.status(404).json({ message: "Cliente no encontrado" });
+        customer.password = await bcrypt.hash(password, 10);
+        customer.loginAttempts = 0;
+        customer.lockUntil = null;
+        await customer.save();
+        res.clearCookie("passwordResetCookie");
+        return res.json({ message: "Contraseña actualizada correctamente" });
+    } catch (error) {
+        return res.status(400).json({ message: "La recuperación expiró o es inválida" });
     }
 };
 

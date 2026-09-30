@@ -7,7 +7,7 @@ export const CartScreen = ({ navigation }) => {
   const { items, increment, decrement, subtotal } = useCart();
 
   const handleCheckout = () => {
-    navigation.navigate('Checkout', { total: subtotal });
+    navigation.navigate('Checkout', { total: subtotal, items });
   };
 
   return (
@@ -32,7 +32,7 @@ export const CartScreen = ({ navigation }) => {
             Explora nuestro catálogo y agrega los mejores productos para tu piel.
           </Text>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Search')}
+            onPress={() => navigation.navigate('SearchTab')}
             className="bg-[#17C3B2] px-6 py-3 rounded-2xl"
           >
             <Text className="text-white font-bold">Ver Catálogo</Text>

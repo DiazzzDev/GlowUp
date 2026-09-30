@@ -7,6 +7,7 @@ import ordersRouter from "./src/routers/orders.js"
 import customerRouter from "./src/routers/customer.js";
 import customerAuthRouter from "./src/routers/customerAuth.js"
 import employeeLoginRouter from "./src/routers/employeeLogin.js";
+import reviewRouter from "./src/routers/review.js";
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use("/api/products", productRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/customer", customerRouter)
 app.use("/api/auth/customer", customerAuthRouter)
+app.use("/api/reviews", reviewRouter)
 app.use("/api/employee/login", employeeLoginRouter)
 
-export default app; 
+export default app;

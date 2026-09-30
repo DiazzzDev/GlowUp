@@ -5,7 +5,7 @@ import useAuth from '../hooks/useAuth';
 
 export const VerifyCodeScreen = ({ route, navigation }) => {
   const email = route?.params?.email || 'usuario@glowup.sv';
-  const [code, setCode] = useState(['', '', '', '']);
+  const [code, setCode] = useState(['', '', '', '', '', '']);
   const { loading, error, handleVerifyCode } = useAuth(navigation);
 
   const handleCodeChange = (text, index) => {
@@ -30,7 +30,7 @@ export const VerifyCodeScreen = ({ route, navigation }) => {
           Verifica tu cuenta
         </Text>
         <Text className="text-[#8C9EA0] text-sm text-center mb-6 px-2">
-          Ingresa el código de 4 dígitos que enviamos a {email}
+          Ingresa el código de 6 caracteres que enviamos a {email}
         </Text>
 
         {error && (
@@ -41,7 +41,7 @@ export const VerifyCodeScreen = ({ route, navigation }) => {
 
         {/* 4 digit boxes */}
         <View className="flex-row justify-center gap-3 mb-8">
-          {[0, 1, 2, 3].map((index) => (
+          {[0, 1, 2, 3, 4, 5].map((index) => (
             <TextInput
               key={index}
               maxLength={1}

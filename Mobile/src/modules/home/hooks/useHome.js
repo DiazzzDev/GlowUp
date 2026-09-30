@@ -1,27 +1,15 @@
-import { useState } from 'react';
-import { PRODUCTS, SKIN_TYPES } from '../../../constants/mockData';
+import useProducts from '../../products/hooks/useProducts';
 
 export const useHome = () => {
-  const [selectedSkinType, setSelectedSkinType] = useState('all');
-  const [products] = useState(PRODUCTS);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const filteredProducts = products.filter((item) => {
-    const matchesSkin =
-      selectedSkinType === 'all' || item.skinType === selectedSkinType;
-    const matchesQuery =
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSkin && matchesQuery;
-  });
+  const productsState = useProducts();
 
   return {
-    skinTypes: SKIN_TYPES,
-    selectedSkinType,
-    setSelectedSkinType,
-    products: filteredProducts,
-    searchQuery,
-    setSearchQuery,
+    skinTypes: productsState.skinTypes,
+    selectedSkinType: productsState.selectedType,
+    setSelectedSkinType: productsState.setSelectedType,
+    products: productsState.products,
+    searchQuery: productsState.query,
+    setSearchQuery: productsState.setQuery,
   };
 };
 

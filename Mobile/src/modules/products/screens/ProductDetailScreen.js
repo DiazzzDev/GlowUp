@@ -1,5 +1,7 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, View, Text, Image, TouchableOpacity, ScrollView, StatusBar, TextInput } from 'react-native';
+import { useApp } from '../../../context/AppContext';
+import { fetchReviewsAction, saveReviewAction } from '../../reviews/actions/reviewActions';
 
 export const ProductDetailScreen = ({ route, navigation }) => {
   const product = route?.params?.product || {
@@ -11,6 +13,16 @@ export const ProductDetailScreen = ({ route, navigation }) => {
     image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&auto=format&fit=crop&q=80',
     description: 'Fórmula enriquecida con 3 ceramidas esenciales y ácido hialurónico para restaurar la barrera protectora de la piel.',
     brand: 'CeraVe',
+  };
+  const { customer, addToCart } = useApp();
+  const [reviews, setReviews] = useState([]);
+  const [rating, setRating] = useState('5');
+  const [comment, setComment] = useState('');
+  const loadReviews = () => product.id && fetchReviewsAction(product.id).then((data) => setReviews(data.reviews)).catch(() => setReviews([]));
+  useEffect(loadReviews, [product.id]);
+  const submitReview = async () => {
+    if (!customer?.id) return Alert.alert('Inicia sesión', 'Debes iniciar sesión para comentar.');
+    try { await saveReviewAction({ productId: product.id, customerId: customer.id, rating: Number(rating), comment }); setComment(''); loadReviews(); } catch (error) { Alert.alert('No se pudo guardar', error.message); }
   };
 
   return (
@@ -67,6 +79,12 @@ export const ProductDetailScreen = ({ route, navigation }) => {
             {product.description}
           </Text>
 
+          <Text className="text-[#1A2B29] text-sm font-bold mb-2">Valoraciones ({reviews.length})</Text>
+          {reviews.map((review) => <View key={review._id} className="bg-[#F0FBF9] rounded-xl p-3 mb-2"><Text className="font-bold text-[#1A2B29]">{'★'.repeat(review.rating)} {review.customerId?.firstName || 'Cliente'}</Text><Text className="text-[#8C9EA0] text-xs mt-1">{review.comment}</Text></View>)}
+          <TextInput value={rating} onChangeText={setRating} keyboardType="number-pad" maxLength={1} placeholder="Valoración 1-5" className="border border-[#D7EFEA] rounded-xl p-3 mb-2" />
+          <TextInput value={comment} onChangeText={setComment} placeholder="Comparte tu experiencia" multiline className="border border-[#D7EFEA] rounded-xl p-3 mb-2" />
+          <TouchableOpacity onPress={submitReview} className="bg-[#E0F7F5] p-3 rounded-xl items-center"><Text className="text-[#17C3B2] font-bold">Publicar valoración</Text></TouchableOpacity>
+
           {/* Benefits */}
           <View className="bg-[#E0F7F5]/50 border border-[#D7EFEA] rounded-2xl p-4 mb-6">
             <Text className="text-[#17C3B2] text-xs font-bold mb-2 uppercase">Beneficios clave</Text>
@@ -80,13 +98,11 @@ export const ProductDetailScreen = ({ route, navigation }) => {
       {/* Floating Bottom Action */}
       <View className="absolute bottom-0 left-0 right-0 p-5 bg-white border-t border-[#D7EFEA] flex-row items-center gap-3">
         <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Cart');
-          }}
+          onPress={() => { const result = addToCart(product); if (!result.ok) Alert.alert('Carrito', result.message); else navigation.navigate('CartTab'); }}
           activeOpacity={0.85}
           className="flex-1 bg-[#17C3B2] py-4 rounded-2xl items-center shadow-md"
         >
-          <Text className="text-white text-base font-bold">Agregar al Carrito</Text>
+          <Text className="text-white text-base font-bold">{Number(product.stock) > 0 ? 'Agregar al Carrito' : 'Sin existencias'}</Text>
         </TouchableOpacity>
       </View>
     </View>

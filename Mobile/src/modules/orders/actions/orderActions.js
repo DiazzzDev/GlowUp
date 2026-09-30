@@ -1,12 +1,4 @@
 // Acciones para obtener órdenes e historial de compras
-const API_BASE = 'http://localhost:4000/api';
+import { request } from '../../../utils/api';
 
-export const fetchOrdersAction = async () => {
-  try {
-    const response = await fetch(`${API_BASE}/orders/customer`);
-    return await response.json();
-  } catch (error) {
-    console.error('Error en fetchOrdersAction:', error);
-    throw error;
-  }
-};
+export const fetchOrdersAction = async (customerId) => request(`/orders/customer/${customerId}`);

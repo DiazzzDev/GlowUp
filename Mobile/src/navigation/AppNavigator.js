@@ -5,6 +5,7 @@ import WelcomeScreen from '../modules/auth/screens/WelcomeScreen';
 import LoginScreen from '../modules/auth/screens/LoginScreen';
 import RegisterScreen from '../modules/auth/screens/RegisterScreen';
 import VerifyCodeScreen from '../modules/auth/screens/VerifyCodeScreen';
+import ForgotPasswordScreen from '../modules/auth/screens/ForgotPasswordScreen';
 import ProductDetailScreen from '../modules/products/screens/ProductDetailScreen';
 import CategoriesScreen from '../modules/categories/screens/CategoriesScreen';
 import CheckoutScreen from '../modules/checkout/screens/CheckoutScreen';
@@ -13,6 +14,7 @@ import SkinTipsScreen from '../modules/skintips/screens/SkinTipsScreen';
 import SurveyScreen from '../modules/survey/screens/SurveyScreen';
 import AboutUsScreen from '../modules/brand/screens/AboutUsScreen';
 import ContactUsScreen from '../modules/brand/screens/ContactUsScreen';
+import ProfileScreen from '../modules/profile/screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +32,7 @@ export const AppNavigator = () => {
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="VerifyCode" component={VerifyCodeScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
 
       {/* Main Tab App */}
       <Stack.Screen name="MainTabs" component={TabNavigator} />
@@ -43,6 +46,7 @@ export const AppNavigator = () => {
       <Stack.Screen name="Survey" component={SurveyScreen} />
       <Stack.Screen name="AboutUs" component={AboutUsScreen} />
       <Stack.Screen name="ContactUs" component={ContactUsScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
   );
 };

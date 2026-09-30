@@ -25,12 +25,14 @@ const orderSchema = new Schema({
             quantity: {
                 type: Number,
                 required: true,
-                default: 1
+                default: 1,
+                min: 1
             },
 
             price: {
                 type: Number,
-                required: true
+                required: true,
+                min: 0
             }
         }
     ],
@@ -53,7 +55,8 @@ const orderSchema = new Schema({
 
     total: {
         type: Number,
-        required: true
+        required: true,
+        min: 0
     }
 },
     {

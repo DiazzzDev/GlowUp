@@ -1,5 +1,6 @@
 import customerModel from "../model/customer.js";
 import bcrypt from "bcryptjs";
+import { EMAIL_PATTERN, validateCustomer } from "../utils/validation.js";
 
 const customerController = {};
 
@@ -43,6 +44,9 @@ customerController.createCustomer = async (req, res) => {
             password,
             status
         } = customerData;
+
+        const validationError = validateCustomer({ firstName, lastName, phone, email, password });
+        if (validationError) return res.status(400).json({ message: validationError });
 
         const image = req.file?.path || null;
         const publicId = req.file?.filename || null;
@@ -96,11 +100,12 @@ customerController.updateCustomer = async (req, res) => {
             return res.status(404).json({ message: "Cliente no encontrado" });
         }
 
-        const updatedCustomer = await customerModel.findByIdAndUpdate(
-            id,
-            req.body,
-            { new: true }
-        );
+        const customerData = req.body.customer ? JSON.parse(req.body.customer) : req.body;
+        const allowed = ["firstName", "lastName", "phone", "email", "image"];
+        const update = Object.fromEntries(Object.entries(customerData).filter(([key, value]) => allowed.includes(key) && String(value || "").trim()));
+        if (update.email && !EMAIL_PATTERN.test(update.email.trim())) return res.status(400).json({ message: "El correo electrónico no es válido" });
+        if (req.file) { update.image = req.file.path; update.publicId = req.file.filename; }
+        const updatedCustomer = await customerModel.findByIdAndUpdate(id, update, { new: true, runValidators: true });
 
         if (!updatedCustomer) {
             return res.status(404).json({ message: "Cliente no encontrado" });

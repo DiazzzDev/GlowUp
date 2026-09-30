@@ -3,8 +3,9 @@ import { View, Text, TouchableOpacity, ScrollView, StatusBar, TextInput } from '
 import useCheckout from '../hooks/useCheckout';
 
 export const CheckoutScreen = ({ route, navigation }) => {
-  const total = route?.params?.total || 49.99;
-  const { loading, paymentMethod, setPaymentMethod, address, setAddress, processPayment } = useCheckout(navigation);
+  const total = route?.params?.total || 0;
+  const items = route?.params?.items || [];
+  const { loading, paymentMethod, setPaymentMethod, address, setAddress, processPayment, error } = useCheckout(navigation);
 
   return (
     <View className="flex-1 bg-[#F0FBF9]">
@@ -25,6 +26,7 @@ export const CheckoutScreen = ({ route, navigation }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 110 }}
       >
+        {error ? <Text className="text-[#E76F51] text-xs mb-3">{error}</Text> : null}
         {/* Shipping Address */}
         <View className="bg-white p-5 rounded-3xl border border-[#D7EFEA] mb-4 shadow-xs">
           <Text className="text-[#1A2B29] text-sm font-bold mb-2">Dirección de Entrega</Text>
@@ -96,7 +98,7 @@ export const CheckoutScreen = ({ route, navigation }) => {
       {/* Floating Confirm Button */}
       <View className="absolute bottom-0 left-0 right-0 p-5 bg-white border-t border-[#D7EFEA]">
         <TouchableOpacity
-          onPress={() => processPayment(total)}
+          onPress={() => processPayment(items, total)}
           disabled={loading}
           activeOpacity={0.85}
           className="w-full bg-[#17C3B2] py-4 rounded-2xl items-center shadow-md"

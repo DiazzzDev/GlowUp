@@ -7,6 +7,8 @@ router.route("/")
     .get(ordersController.getOrders)
     .post(ordersController.createOrder);
 
+router.get("/customer/:customerId", ordersController.getOrdersByCustomer);
+
 router.route("/:id")
     .get(ordersController.getOrderById)
     .put(ordersController.updateOrder)

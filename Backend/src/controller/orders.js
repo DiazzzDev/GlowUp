@@ -1,6 +1,7 @@
 import orderModel from "../model/orders.js";
 import productModel from "../model/products.js";
 import customerModel from "../model/customer.js";
+import { validateOrderProducts } from "../utils/validation.js";
 
 const orderController = {};
 
@@ -29,6 +30,17 @@ orderController.getOrders = async (req, res) => {
     } catch (error) {
         console.error("Error: " + error);
         return res.status(500).json({ message: "Error del servidor" });
+    }
+};
+
+orderController.getOrdersByCustomer = async (req, res) => {
+    try {
+        const orders = await orderModel.find({ customerId: req.params.customerId })
+            .populate("products.productId", "productName brand price image")
+            .sort({ createdAt: -1 });
+        return res.status(200).json(orders);
+    } catch (error) {
+        return res.status(400).json({ message: "No se pudo obtener el historial de pedidos" });
     }
 };
 
@@ -70,33 +82,27 @@ orderController.createOrder = async (req, res) => {
             return res.status(404).json({ message: "Cliente no encontrado" });
         }
 
-        if (!products || products.length === 0) {
-            return res.status(400).json({ message: "Debe agregar al menos un producto" });
-        }
+        const validationError = validateOrderProducts(products);
+        if (validationError) return res.status(400).json({ message: validationError });
 
         let total = 0;
         const productDetails = [];
 
-        for (let i = 0; i < products.length; i++) {
-            const productFound = await productModel.findById(products[i].productId);
-
-            if (!productFound) {
-                return res.status(404).json({
-                    message: `Producto no encontrado: ${products[i].productId}`
-                });
+        const reservedProducts = [];
+        try {
+            for (const item of products) {
+                const quantity = Number(item.quantity);
+                // Atomic reservation prevents concurrent orders from overselling inventory.
+                const productFound = await productModel.findOneAndUpdate(
+                    { _id: item.productId, stock: { $gte: quantity }, status: "In Stock" },
+                    { $inc: { stock: -quantity } }, { new: true }
+                );
+                if (!productFound) throw new Error(`Stock insuficiente o producto no disponible: ${item.productId}`);
+                reservedProducts.push({ productId: item.productId, quantity });
+                const price = productFound.price;
+                total += price * quantity;
+                productDetails.push({ productId: item.productId, quantity, price });
             }
-
-            const quantity = products[i].quantity || 1;
-            const price = productFound.price;
-
-            total += price * quantity;
-
-            productDetails.push({
-                productId: products[i].productId,
-                quantity,
-                price
-            });
-        }
 
         const orderNumber = await generateOrderNumber();
 
@@ -110,12 +116,16 @@ orderController.createOrder = async (req, res) => {
             total
         });
 
-        await newOrder.save();
+            await newOrder.save();
 
-        return res.status(201).json({
+            return res.status(201).json({
             message: "Pedido creado con éxito",
             order: newOrder
-        });
+            });
+        } catch (error) {
+            await Promise.all(reservedProducts.map(({ productId, quantity }) => productModel.findByIdAndUpdate(productId, { $inc: { stock: quantity } })));
+            return res.status(400).json({ message: error.message });
+        }
 
     } catch (error) {
         console.error("Error: " + error);

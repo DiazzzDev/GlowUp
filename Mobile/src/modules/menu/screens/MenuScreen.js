@@ -29,7 +29,7 @@ export const MenuScreen = ({ navigation }) => {
         <MenuItemRow
           icon="👤"
           label="Cuenta"
-          onPress={() => {}}
+          onPress={() => navigation.navigate('Profile')}
         />
 
         <MenuItemRow

@@ -1,74 +1,83 @@
 import { useState } from 'react';
-import { loginAction, registerAction, verifyCodeAction } from '../actions/authActions';
+import { forgotPasswordAction, loginAction, registerAction, resetPasswordAction, verifyCodeAction } from '../actions/authActions';
+import { useApp } from '../../../context/AppContext';
+import { validateLogin, validateRegistration } from '../../../utils/validation';
 
 export const useAuth = (navigation) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [user, setUser] = useState({
-    name: 'Usuario Demo',
-    email: 'usuario@glowup.sv',
-  });
+  const { setCustomer } = useApp();
 
   const handleLogin = async (email, password) => {
+    const validationError = validateLogin({ email, password });
+    if (validationError) { setError(validationError); return false; }
     setLoading(true);
     setError(null);
     try {
-      // Simula o llama a la acción
-      // const res = await loginAction(email, password);
-      setTimeout(() => {
-        setLoading(false);
-        setUser({ name: email.split('@')[0] || 'Usuario', email });
-        if (navigation) navigation.navigate('MainTabs');
-      }, 500);
+      const response = await loginAction(email, password);
+      setCustomer(response.customer);
+      if (navigation) {navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });}
+      return true;
     } catch (err) {
-      setLoading(false);
       setError(err.message || 'Credenciales incorrectas');
-    }
+      return false;
+    } finally { setLoading(false); }
   };
 
   const handleRegister = async (formData) => {
+    const validationError = validateRegistration(formData);
+    if (validationError) { setError(validationError); return false; }
     setLoading(true);
     setError(null);
     try {
-      // const res = await registerAction(formData);
-      setTimeout(() => {
-        setLoading(false);
-        if (navigation) navigation.navigate('VerifyCode', { email: formData.email });
-      }, 600);
+      await registerAction(formData);
+      if (navigation) {navigation.navigate('VerifyCode', { email: formData.email });}
+      return true;
     } catch (err) {
-      setLoading(false);
       setError(err.message || 'Error al crear cuenta');
-    }
+      return false;
+    } finally { setLoading(false); }
   };
 
   const handleVerifyCode = async (email, code) => {
     setLoading(true);
     setError(null);
     try {
-      // const res = await verifyCodeAction(email, code);
-      setTimeout(() => {
-        setLoading(false);
-        if (navigation) navigation.navigate('MainTabs');
-      }, 600);
+      if (!/^[a-f0-9]{6}$/i.test(code)) {throw new Error('Ingresa el código de 6 caracteres recibido.');}
+      await verifyCodeAction(code);
+      if (navigation) {navigation.navigate('Login');}
+      return true;
     } catch (err) {
-      setLoading(false);
       setError(err.message || 'Código inválido');
-    }
+      return false;
+    } finally { setLoading(false); }
   };
 
   const handleLogout = () => {
-    setUser(null);
-    if (navigation) navigation.navigate('Welcome');
+    setCustomer(null);
+    if (navigation) {navigation.navigate('Welcome');}
+  };
+
+  const handleForgotPassword = async (email) => {
+    const validationError = validateLogin({ email, password: 'placeholder' });
+    if (validationError) { setError(validationError); return false; }
+    setLoading(true); setError(null);
+    try { await forgotPasswordAction(email); return true; } catch (err) { setError(err.message); return false; } finally { setLoading(false); }
+  };
+  const handleResetPassword = async (code, password) => {
+    setLoading(true); setError(null);
+    try { await resetPasswordAction(code, password); return true; } catch (err) { setError(err.message); return false; } finally { setLoading(false); }
   };
 
   return {
     loading,
     error,
-    user,
     handleLogin,
     handleRegister,
     handleVerifyCode,
     handleLogout,
+    handleForgotPassword,
+    handleResetPassword,
   };
 };
 

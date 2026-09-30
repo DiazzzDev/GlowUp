@@ -5,23 +5,22 @@ import AuthButton from '../components/AuthButton';
 import useAuth from '../hooks/useAuth';
 
 export const RegisterScreen = ({ navigation }) => {
-  const [nombre, setNombre] = useState('Juan Pérez');
-  const [email, setEmail] = useState('example@email.com');
-  const [password, setPassword] = useState('********');
-  const [telefono, setTelefono] = useState('7000-0000');
-  const [fechaNac, setFechaNac] = useState('12-12-2000');
-  const [direccion, setDireccion] = useState('San Salvador, El Salvador');
+  const [nombre, setNombre] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [edad, setEdad] = useState('');
 
   const { loading, error, handleRegister } = useAuth(navigation);
 
   const onSubmit = () => {
     handleRegister({
-      nombre,
+      firstName: nombre.trim().split(' ')[0],
+      lastName: nombre.trim().split(' ').slice(1).join(' ') || '-',
       email,
       password,
-      telefono,
-      fechaNac,
-      direccion,
+      phone: telefono,
+      age: Number(edad),
     });
   };
 
@@ -91,24 +90,18 @@ export const RegisterScreen = ({ navigation }) => {
             </View>
             <View className="flex-1">
               <AuthInput
-                label="Fecha de Nac."
-                value={fechaNac}
-                onChangeText={setFechaNac}
-                placeholder="12-12-2000"
+                label="Edad"
+                value={edad}
+                onChangeText={setEdad}
+                placeholder="18"
+                keyboardType="number-pad"
               />
             </View>
           </View>
 
-          <AuthInput
-            label="Dirección"
-            value={direccion}
-            onChangeText={setDireccion}
-            placeholder="San Salvador, El Salvador"
-          />
-
           <View className="mt-2">
             <AuthButton
-              title="Inicia sesión"
+              title="Crear cuenta"
               onPress={onSubmit}
               loading={loading}
             />
