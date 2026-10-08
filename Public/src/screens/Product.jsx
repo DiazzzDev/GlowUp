@@ -1,149 +1,158 @@
-import React, { useState } from 'react';
-// ELIMINÉ EL IMPORT DEL HEADER porque ahora viene desde App.jsx
-
-// --- IMPORTACIÓN DE IMÁGENES POR MARCA ---
-// La Roche Posay
-import micelarLRP from '../assets/products/agua_micelar_la_roche_posay.png';
-import correctorLRP from '../assets/products/crema_correctora_la_roche_posay.png';
-import lavadoLRP from '../assets/products/crema_lavado_la_roche_posay.png';
-import gelLRP from '../assets/products/gel_limpiador_la_roche_posay.png';
-import facialLRP from '../assets/products/hidratante_facial_la_roche_posay.png';
-import solarLRP from '../assets/products/protector_solar_la_roche_posay.png';
-import retinolLRP from '../assets/products/retinol_la_roche_posay.png';
-
-// CeraVe
-import micelarCera from '../assets/products/agua_micelar_cerave.png';
-import gelCera from '../assets/products/crema_gel_cerave.png';
-import hidraCera from '../assets/products/crema_hidratante_cerave.png';
-import hidra2Cera from '../assets/products/crema_hidratante2_cerave.png';
-import banoCera from '../assets/products/gel_baño_cerave.png';
-import limpiadorCera from '../assets/products/gel_limpiador_cerave.png';
-import locionCera from '../assets/products/locion_renovadora_cerave.png';
-
-// Banana Boat
-import aerosolBanana from '../assets/products/protector_solar_aerosol_banana_boat.png';
-import regularBanana from '../assets/products/protector_solar_banana_boat.png';
-import kidsBanana from '../assets/products/protector_solar_kids_banana_boat.png';
-import simpleBanana from '../assets/products/protector_solar_simple_protect_banana_boat.png';
-import ultraBanana from '../assets/products/protector_solar_ultra_sport_banana_boat.png';
-
-// Nivea
-import micelarNivea from '../assets/products/agua_micelar_nivea.png';
-import correctorNivea from '../assets/products/crema_correctora_nivea.png';
-import limpiadorNivea from '../assets/products/gel_limpiador_nivea.png';
-import limpiador2Nivea from '../assets/products/gel_limpiador2_nivea.png';
-import facialNivea from '../assets/products/hidratante_facial_nivea.png';
-import solarNivea from '../assets/products/protector_solar_nivea.png';
-import retinolNivea from '../assets/products/retinol_nivea.png';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Product = () => {
-  const [currentPage, setCurrentPage] = useState(1);
+  // Estados para meter lo que venga de la base de datos
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [cartCount, setCartCount] = useState(0);
 
-  // Mapeo de marcas por página (1 página = 1 marca)
-  const brandPages = {
-    1: { name: 'La Roche Posay', items: [
-      { id: 101, name: 'AGUA MICELAR', price: '$31.85', img: micelarLRP, tags: ['Limpieza', 'Piel Sensible'] },
-      { id: 102, name: 'CREMA CORRECTORA', price: '$55.15', img: correctorLRP, tags: ['Acné', 'Tratamiento'] },
-      { id: 103, name: 'CREMA DE LAVADO', price: '$22.99', img: lavadoLRP, tags: ['Suave', 'Atópica'] },
-      { id: 104, name: 'GEL LIMPIADOR', price: '$33.99', img: gelLRP, tags: ['Purificante'] },
-      { id: 105, name: 'HIDRATANTE FACIAL', price: '$33.99', img: facialLRP, tags: ['Matificante'] },
-      { id: 106, name: 'PROTECTOR SOLAR', price: '$30.99', img: solarLRP, tags: ['UVMUNE 400'] },
-      { id: 107, name: 'RETINOL OJOS', price: '$25.15', img: retinolLRP, tags: ['Anti-edad'] }
-    ]},
-    2: { name: 'CeraVe', items: [
-      { id: 201, name: 'AGUA MICELAR', price: '$24.99', img: micelarCera, tags: ['Hidratante'] },
-      { id: 202, name: 'CREMA EN GEL', price: '$15.99', img: gelCera, tags: ['Blemish Control'] },
-      { id: 203, name: 'CREMA HIDRATANTE', price: '$18.99', img: hidraCera, tags: ['Piel Seca'] },
-      { id: 204, name: 'HIDRATANTE + HIALURÓNICO', price: '$27.99', img: hidra2Cera, tags: ['Reparadora'] },
-      { id: 205, name: 'GEL DE BAÑO', price: '$30.99', img: banoCera, tags: ['Cuerpo'] },
-      { id: 206, name: 'GEL LIMPIADOR', price: '$25.15', img: limpiadorCera, tags: ['Espumoso'] },
-      { id: 207, name: 'LOCIÓN RENOVADORA', price: '$23.99', img: locionCera, tags: ['SA Lotion'] }
-    ]},
-    3: { name: 'Banana Boat', items: [
-      { id: 301, name: 'PROTECTOR AEROSOL', price: '$31.85', img: aerosolBanana, tags: ['Sport 50+'] },
-      { id: 302, name: 'DRY BALANCE 50FPS', price: '$22.99', img: regularBanana, tags: ['Mate'] },
-      { id: 303, name: 'KIDS SPORT', price: '$30.99', img: kidsBanana, tags: ['Niños'] },
-      { id: 304, name: 'SIMPLE PROTECT', price: '$33.99', img: simpleBanana, tags: ['Sin Fragancia'] },
-      { id: 305, name: 'ULTRA SPORT 50+', price: '$33.99', img: ultraBanana, tags: ['Resistente'] }
-    ]},
-    4: { name: 'Nivea', items: [
-      { id: 401, name: 'AGUA MICELAR', price: '$31.85', img: micelarNivea, tags: ['Suave'] },
-      { id: 402, name: 'CREMA CORRECTORA', price: '$55.15', img: correctorNivea, tags: ['Luminous 630'] },
-      { id: 403, name: 'GEL LIMPIADOR', price: '$22.99', img: limpiadorNivea, tags: ['Refrescante'] },
-      { id: 404, name: 'LIMPIADOR CONTROL', price: '$33.99', img: limpiador2Nivea, tags: ['Piel Grasa'] },
-      { id: 405, name: 'HIDRATANTE FACIAL', price: '$33.99', img: facialNivea, tags: ['Nutritiva'] },
-      { id: 406, name: 'PROTECTOR SOLAR', price: '$30.99', img: solarNivea, tags: ['Anti-manchas'] },
-      { id: 407, name: 'RETINOL NOCHE', price: '$25.15', img: retinolNivea, tags: ['Renovador'] }
-    ]}
-  };
+  // Control de paginación para no saturar la vista con un solo grid gigante
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 8; // Dejo 8 productos por página, se puede cambiar luego
 
-  const handleNext = () => currentPage < 4 && setCurrentPage(currentPage + 1);
+  // --- TRAER LOS PRODUCTOS DE LA API ---
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        // Ruta exacta al endpoint de productos que definimos en el backend (puerto 4000)
+        const response = await axios.get('http://localhost:4000/api/products');
+        setProducts(response.data);
+      } catch (err) {
+        console.error("Error jalando productos:", err);
+        setError("No se pudieron cargar los productos. Hay que revisar si el backend está corriendo.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // --- OPERACIONES PARA LA PAGINACIÓN ---
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  
+  // Cortamos el array global para sacar solo los productos de la página actual
+  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(products.length / productsPerPage);
+
+  const handleNext = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
   const handlePrev = () => currentPage > 1 && setCurrentPage(currentPage - 1);
+
+  // Pantalla de carga por si la base de datos o Cloudinary tardan en responder
+  if (loading) {
+    return (
+      <div style={{ ...styles.page, textAlign: 'center', padding: '100px 10%' }}>
+        <h2 style={{ color: '#17C3B2' }}>Cargando catálogo...</h2>
+      </div>
+    );
+  }
+
+  // Pantalla de error por si se cae el servidor o explota la petición
+  if (error) {
+    return (
+      <div style={{ ...styles.page, textAlign: 'center', padding: '100px 10%' }}>
+        <h2 style={{ color: 'red' }}>{error}</h2>
+      </div>
+    );
+  }
 
   return (
     <div style={styles.page}>
-      {/* ELIMINÉ EL HEADER DE AQUÍ */}
-
-      {/* Banner Principal */}
+      {/* Banner Principal - Ahora cuenta el total general dinámicamente */}
       <section style={styles.heroBanner}>
         <div style={styles.heroContent}>
           <h1 style={styles.heroTitle}>Todos los productos en un solo lugar</h1>
-          <p style={styles.heroSubtitle}>Marca actual: {brandPages[currentPage].name}</p>
+          <p style={styles.heroSubtitle}>
+            {products.length} productos disponibles en nuestro catálogo
+          </p>
         </div>
       </section>
 
-      {/* Grid de Productos */}
+      {/* Grid de Productos - Renderizado desde MongoDB */}
       <section style={styles.productGrid}>
-        {brandPages[currentPage].items.map((item) => (
-          <div key={item.id} style={styles.card}>
-            <div style={styles.imagePlaceholder}>
-              <img src={item.img} alt={item.name} style={styles.img} />
-            </div>
-            <div style={styles.infoArea}>
-              <p style={styles.brandTxt}>{brandPages[currentPage].name}</p>
-              <h3 style={styles.nameTxt}>{item.name}</h3>
-              <div style={styles.tagRow}>
-                {item.tags.map(tag => <span key={tag} style={styles.tag}>{tag}</span>)}
+        {products.length === 0 ? (
+          <p style={{ textAlign: 'center', gridColumn: '1/-1', color: '#666' }}>
+            No hay productos registrados en la base de datos actualmente.
+          </p>
+        ) : (
+          currentProducts.map((product) => (
+            <div key={product._id} style={styles.card}>
+              {/* Contenedor de la Imagen - Jala directo el link seguro de Cloudinary */}
+              <div style={styles.imagePlaceholder}>
+                {product.image ? (
+                  <img src={product.image} alt={product.productName} style={styles.img} />
+                ) : (
+                  <span style={{ fontSize: '12px', color: '#999' }}>Sin foto</span>
+                )}
               </div>
-              <div style={styles.priceRow}>
-                <span style={styles.priceTxt}>{item.price}</span>
-                <button 
-                  style={styles.cartBtn} 
-                  onClick={() => setCartCount(cartCount + 1)}
-                >🛒</button>
+              
+              {/* Bloque de Información del Producto */}
+              <div style={styles.infoArea}>
+                <p style={styles.brandTxt}>{product.brand}</p>
+                <h3 style={styles.nameTxt}>{product.productName}</h3>
+                
+                {/* Metemos Categoría y Tipo de Piel como los tags del diseño original */}
+                <div style={styles.tagRow}>
+                  <span style={styles.tag}>{product.category}</span>
+                  <span style={styles.tag}>{product.skinType}</span>
+                </div>
+                
+                {/* Fila de Precio y Carrito */}
+                <div style={styles.priceRow}>
+                  <span style={styles.priceTxt}>
+                    ${product.price ? product.price.toFixed(2) : '0.00'}
+                  </span>
+                  {/* Deshabilitamos el botón de carrito si el estado es Out of Stock */}
+                  <button 
+                    style={styles.cartBtn} 
+                    onClick={() => setCartCount(cartCount + 1)}
+                    disabled={product.status === "Out of Stock"}
+                  >
+                    {product.status === "Out of Stock" ? '❌' : '🛒'}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </section>
 
-      {/* Paginación Funcional */}
-      <div style={styles.pagination}>
-        <button 
-          onClick={handlePrev} 
-          style={styles.pageBtnSide} 
-          disabled={currentPage === 1}
-        >Anterior</button>
-        
-        {[1, 2, 3, 4].map(num => (
-          <span 
-            key={num} 
-            onClick={() => setCurrentPage(num)}
-            style={currentPage === num ? styles.pageNumActive : styles.pageNum}
+      {/* Paginación Dinámica - Se oculta automáticamente si todo cabe en una sola página */}
+      {totalPages > 1 && (
+        <div style={styles.pagination}>
+          <button 
+            onClick={handlePrev} 
+            style={styles.pageBtnSide} 
+            disabled={currentPage === 1}
           >
-            {num}
-          </span>
-        ))}
-        
-        <button 
-          onClick={handleNext} 
-          style={styles.pageBtnSide} 
-          disabled={currentPage === 4}
-        >Siguiente</button>
-      </div>
+            Anterior
+          </button>
+          
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
+            <span 
+              key={num} 
+              onClick={() => setCurrentPage(num)}
+              style={currentPage === num ? styles.pageNumActive : styles.pageNum}
+            >
+              {num}
+            </span>
+          ))}
+          
+          <button 
+            onClick={handleNext} 
+            style={styles.pageBtnSide} 
+            disabled={currentPage === totalPages}
+          >
+            Siguiente
+          </button>
+        </div>
+      )}
 
-      {/* Footer actualizado igual que ContactUs */}
+      {/* Footer original */}
       <footer style={styles.footer}>
         <div style={styles.footerGrid}>
           <div style={styles.footerColumna}>
@@ -160,7 +169,6 @@ const Product = () => {
           <div style={styles.footerColumna}>
           </div>
         </div>
-        {/* Copyright centrado abajo */}
         <div style={styles.footerCopyright}>
           <p style={styles.footerTexto}>© 2026 Glow Up.sv — Belleza real, resultados reales.</p>
         </div>
@@ -169,6 +177,7 @@ const Product = () => {
   );
 };
 
+// Mantenemos intacto nuestro objeto de estilos inline
 const styles = {
   page: { fontFamily: "'Poppins', sans-serif", backgroundColor: '#FFFFFF' },
   heroBanner: { 
@@ -191,7 +200,7 @@ const styles = {
     height: '200px', backgroundColor: '#F2F2F2', 
     display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '10px' 
   },
-  img: { maxHeight: '100%', objectFit: 'contain' },
+  img: { maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' },
   
   infoArea: { padding: '15px' },
   brandTxt: { fontSize: '11px', color: '#2A4D46', fontWeight: '700' },
@@ -217,7 +226,6 @@ const styles = {
   pageNum: { cursor: 'pointer', color: '#1A2B29' },
   pageNumActive: { color: '#17C3B2', fontWeight: 'bold', textDecoration: 'underline', cursor: 'pointer' },
   
-  // Footer actualizado igual que ContactUs
   footer: { 
     backgroundColor: '#17C3B2', 
     padding: '40px 10% 20px 10%', 

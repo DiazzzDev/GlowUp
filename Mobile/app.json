@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "Glow Up SV",
+    "slug": "glowup-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#17C3B2"
+    },
+    "ios": {
+      "supportsTablet": false
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#17C3B2"
+      }
+    }
+  }
+}
